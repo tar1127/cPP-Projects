@@ -13,10 +13,10 @@ bool Screen::init()
 {
 
     // we need an array for every pixal on the screen . each pixple is 32 bits , 4 bytes 
-    Uint32* m_buffer = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
+     m_buffer = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        return false; 
+        return false;
     }
     else {
         // create the window here 
@@ -31,14 +31,10 @@ bool Screen::init()
         }
         else {
 
-            // this variable holds SDL ents 
-
-
-
+            // this variable holds SDL  
             m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_PRESENTVSYNC);
 
             if (m_renderer == NULL) {
-                
                 SDL_Quit();
                 return false;
             }
@@ -47,36 +43,51 @@ bool Screen::init()
 
 
             if (m_tex == NULL) {
-                
                 SDL_Quit();
                 return false;
             }
 
-
-
             memset(m_buffer, 0x00, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
-            // buffer[105000] = 0xFFFFFFFF; 
-            for (int i = 0l; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-                m_buffer[i] = 0xFF80FFFF;
-            }
-
-            SDL_UpdateTexture(m_tex, NULL, m_buffer, SCREEN_WIDTH * sizeof(Uint32));
-
-            // clear the renderer 
-            SDL_RenderClear(m_renderer);
-
-            // set the texture to the renderer 
-            SDL_RenderCopy(m_renderer, m_tex, NULL, NULL);
-
-            // present the Render
-            SDL_RenderPresent(m_renderer);
-            return false;
+            
         }
     }
+    return true; 
+}
+
+void Screen::update()
+{
+    SDL_UpdateTexture(m_tex, NULL, m_buffer, SCREEN_WIDTH * sizeof(Uint32));
+    // clear the renderer 
+    SDL_RenderClear(m_renderer);
+    // set the texture to the renderer 
+    SDL_RenderCopy(m_renderer, m_tex, NULL, NULL);
+    // present the Render
+    SDL_RenderPresent(m_renderer);
 }
 
 bool Screen::processEvent() {
-    return false;
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Screen::setPixle(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
+{
+    Uint32 color = 0; 
+    color += red; 
+    color <<= 8; 
+    color += green; 
+    color <<= 8; 
+    color += blue; 
+    color <<= 8;
+    color += 0xFF; 
+    
+    m_buffer[(y * SCREEN_WIDTH) + x] = color; 
+
 }
 
 void Screen::close() {
