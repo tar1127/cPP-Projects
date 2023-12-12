@@ -12,8 +12,8 @@ m_buffer(NULL)
 bool Screen::init()
 {
 
-    // we need an array for every pixal on the screen . each pixple is 32 bits , 4 bytes 
-     m_buffer = new Uint32[SCREEN_WIDTH * SCREEN_HEIGHT];
+    // we need an array for every pixal o the screen . each pixple is 32 bits , 4 bytes of RGB and Alpha
+     m_buffer = new Uint32[SCREEN_WIDTH  * SCREEN_HEIGHT];
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         return false;
@@ -77,6 +77,10 @@ bool Screen::processEvent() {
 
 void Screen::setPixle(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
 {
+    if (x < 0 || x >= SCREEN_WIDTH  || y < 0 || y >= SCREEN_HEIGHT  ) {
+        return; 
+    }
+    
     Uint32 color = 0; 
     color += red; 
     color <<= 8; 
@@ -88,6 +92,11 @@ void Screen::setPixle(int x, int y, Uint8 red, Uint8 green, Uint8 blue)
     
     m_buffer[(y * SCREEN_WIDTH) + x] = color; 
 
+}
+
+void Screen::clear()
+{
+    memset(m_buffer, 0x00, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 }
 
 void Screen::close() {

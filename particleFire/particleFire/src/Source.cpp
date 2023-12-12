@@ -1,45 +1,72 @@
 
 #include"Screen.h"
+#include<stdlib.h>
+#include "Swarm.h"
 
 
 int main(int argc, char* argv[]) {
 
+    
+    srand(time(NULL)); 
 
-    // we need an array for every pixal on the screen . each pixple is 32 bits , 4 bytes 
-            
-  
-            // declear the screen 
-            Screen screen; 
+    // declear the screen 
+    Screen screen; 
 
-            // call initilization 
-            if (screen.init() == false) {
-                std::cout << "Error initilizing SDL" << std::endl; 
-            }
+    // call initilization 
+    if (screen.init() == false) {
+        std::cout << "Error initilizing SDL" << std::endl; 
+    }
+    
+    Swarm swarm; 
 
-            // game loop 
-            while (1) {
-                //screenSurface = SDL_GetWindowSurface(window); // get the surface of the window
-                //// fill it with a rectange
-                //SDL_FillRect(screenSurface,
-                //    NULL, 
-                //     SDL_MapRGB(screenSurface->format, 0x43, 0x0b, 0x22));
-                //// update the window 
-                //SDL_UpdateWindowSurface(window);
 
-                screen.setPixle(200, 200, 255, 255, 255); 
-                screen.setPixle(201, 200, 255, 255, 255); 
-                screen.setPixle(202, 200, 255, 255, 255); 
-                screen.setPixle(203, 200, 255, 255, 255); 
-       
 
-                screen.update(); 
-                if (screen.processEvent() == false) {
-                    break; 
-                }
      
+
+    // game loop 
+    while (1) {
+
+        int elapsed = SDL_GetTicks();
+        //double red = std::sin(elapsed); 
+        int red = (1 + std::sin(2 * M_PI * .00003 * elapsed)) * 128;
+        int green = (1 + std::sin(2 * M_PI * .00005 * elapsed)) * 128;
+        int blue = (1 + std::sin(2 * M_PI * .00009 * elapsed)) * 128;
+
+        const Particle* const particles = swarm.getParticle();
+        screen.clear();
+
+        for (int i = 0; i < Swarm::NUM_PARTICLES; i++) {
+            Particle p = particles[i];
+            
+            int posx = (p.m_x + 1 ) * Screen::SCREEN_WIDTH / 2;
+            int posy = p.m_y  * Screen::SCREEN_WIDTH / 2 + Screen::SCREEN_HEIGHT/2;
+
+            screen.setPixle(posx, posy, red, green, blue);
+            
+        }
+        
+        swarm.swarmUpdate(); 
+/*  p.particleUpdate();
+
+
+        //std::cout << green << std::endl;
+
+        for (int y = 0; y < Screen::SCREEN_HEIGHT; y++) {
+            for (int x = 0; x < Screen::SCREEN_WIDTH; x++) {
+                screen.setPixle(x, y, red, green, blue); 
             }
+        }
+*/
 
-            screen.close(); 
 
-    return 0;
+        screen.update(); 
+        if (screen.processEvent() == false) {
+            break; 
+        }
+     
+    }
+
+       screen.close(); 
+
+ return 0;
 }

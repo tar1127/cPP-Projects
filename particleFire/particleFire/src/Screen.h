@@ -26,6 +26,7 @@ public:
     void update();
     bool processEvent();
     void setPixle(int x, int y, Uint8 red, Uint8 green, Uint8 blue);
+    void clear();
     void close(); 
 };
 
